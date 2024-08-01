@@ -2,6 +2,7 @@ package com.codingshuttle.springbootutorial.springbootwebtutoial.controllers;
 
 import com.codingshuttle.springbootutorial.springbootwebtutoial.dto.EmployeeDTO;
 import com.codingshuttle.springbootutorial.springbootwebtutoial.entities.EmployeeEntity;
+import com.codingshuttle.springbootutorial.springbootwebtutoial.exceptions.ResourceNotFoundException;
 import com.codingshuttle.springbootutorial.springbootwebtutoial.repositories.EmployeeRepository;
 import com.codingshuttle.springbootutorial.springbootwebtutoial.services.EmployeeService;
 import org.apache.coyote.Response;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -28,8 +30,9 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO>  getEmployeeById(@PathVariable(name = "employeeId") Long  id){
         Optional<EmployeeDTO> employeeDTO =  employeeService.findById(id);
 
-        return employeeDTO.map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1)).orElse(
-                ResponseEntity.notFound().build());
+        return employeeDTO.map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1)).orElseThrow(
+                () -> new ResourceNotFoundException("Employee not found with id: "+id)
+        );
 
     }
 
